@@ -1,5 +1,7 @@
 package com.example.udp_packetsender;
 
+import static android.content.pm.PackageManager.PERMISSION_DENIED;
+
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -11,21 +13,33 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 public class MainActivity extends AppCompatActivity {
+    HotSpot hotspot;
     Button button;
+    String [] premissions = {"android.permission.INTERNET","android.permission.ACCESS_NETWORK_STATE","android.permission.ACCESS_WIFI_STATE"};
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         button = findViewById(R.id.button);
+        hotspot = new HotSpot("0.0.0.0",4454);
+        if(checkSelfPermission("android.permission.ACCESS_WIFI_STATE")==PERMISSION_DENIED)
+        {
+            requestPermissions(premissions,0);
+        }
     }
 
     public void sender(View view) {
-
-
-
-//        String message = "Hello from Device 1";
-//        String ipAddress = "192.168.1.101";  // IP of Device 2
-//        int port = 12345;
-//        new Transmitter(message, ipAddress, port).start();
+        hotspot.start();
+        //hotspot.stopServer();
     }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        // Stop the server when the activity is destroyed
+        if (hotspot != null) {
+            hotspot.stopServer();
+        }
+    }
+
 }
