@@ -2,10 +2,14 @@ package com.example.udp_packetsender;
 
 import android.util.Log;
 
+import java.io.BufferedReader;
 import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -53,37 +57,32 @@ public class HotSpot extends Thread{
 
                 // Handle the client connection in a separate thread or method
                 handleClient(clientSocket);
-                clientSocket.close();
+            clientSocket.close();
             //}
         } catch (Exception e) {
             e.printStackTrace();
             Log.e(TAG, "Exception in ServerThread: " + e.getMessage());
         }
-    }
-
-    private void handleClient(Socket clientSocket) {
-        // Perform your communication with the client here
-        Log.d(TAG, "Handling client connection...");
-        // Close the client socket after finishing communication
-        try {
-            clientSocket.close();
-        } catch (IOException e) {
-            e.printStackTrace();
+        finally {
+            stopServer();
         }
     }
 
-//    private void handleClient(Socket clientSocket) {
-//        Log.println(Log.INFO,"nothing new","Succefully connected");
-////        InputStream inputstream = null;
-////        OutputStream outputStream = null;
-////        try {
-////            inputstream = clientSocket.getInputStream();
-////            outputStream = clientSocket.getOutputStream();
-////            DataInputStream commStream = new DataInputStream(inputstream);
-////        } catch (IOException e) {
-////            throw new RuntimeException(e);
-////        }
-//    }
+    private void handleClient(Socket clientSocket) {
+        Log.println(Log.INFO,"Connection","Succefully connected");
+        try {
+            BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+            String recived = in.readLine();
+            Log.println(Log.INFO,"TCP" , "Recived message: " + recived);
+            PrintWriter out = new PrintWriter(clientSocket.getOutputStream(),true);
+            out.println("hello");
+            in.close();
+            out.close();
+        } catch (IOException e) {
+            Log.println(Log.INFO,"Reader","Reader failed to read from buffer");
+            throw new RuntimeException(e);
+        }
+    }
 
     public void stopServer() {
         try {

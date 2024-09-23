@@ -21,7 +21,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         button = findViewById(R.id.button);
-        hotspot = new HotSpot("0.0.0.0",4454);
         if(checkSelfPermission("android.permission.ACCESS_WIFI_STATE")==PERMISSION_DENIED)
         {
             requestPermissions(premissions,0);
@@ -29,6 +28,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void sender(View view) {
+        hotspot = new HotSpot("0.0.0.0",4454);
         hotspot.start();
         //hotspot.stopServer();
     }
