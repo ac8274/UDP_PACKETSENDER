@@ -13,6 +13,7 @@ import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.nio.charset.StandardCharsets;
 
 public class HotSpot extends Thread{
     private ServerSocket serverSocket;
@@ -70,20 +71,44 @@ public class HotSpot extends Thread{
 
     private void handleClient(Socket clientSocket) {
         Log.println(Log.INFO,"Connection","Succefully connected");
+        OutputStream outputStream = null;
+        InputStream inputStream = null;
         try {
-            BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-            String recived = in.readLine();
-            Log.println(Log.INFO,"TCP" , "Recived message: " + recived);
-            PrintWriter out = new PrintWriter(clientSocket.getOutputStream(),true);
-            out.println("hello");
-            in.close();
-            out.close();
+            inputStream = clientSocket.getInputStream();
+            outputStream = clientSocket.getOutputStream();
+
+            byte[] buffer = new byte[4096];
+            int bytesRead = inputStream.read(buffer);
+            String receivedData = new String(buffer, 0, bytesRead, StandardCharsets.US_ASCII);
+            Log.println(Log.INFO,"SocketServer", "Received: " + receivedData);
+            byte[] sendMessage = "hello my friend".getBytes(StandardCharsets.US_ASCII);
+            writeToClient(outputStream , sendMessage);
+//            BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+//            String recived = in.readLine();
+//            Log.println(Log.INFO,"TCP" , "Recived message: " + recived);
+//            PrintWriter out = new PrintWriter(clientSocket.getOutputStream(),true);
+//            out.println("hello");
+//            in.close();
+//            out.close();
         } catch (IOException e) {
             Log.println(Log.INFO,"Reader","Reader failed to read from buffer");
             throw new RuntimeException(e);
         }
     }
 
+    private void writeToClient(OutputStream out, byte[] message)
+    {
+        try {
+            out.write(message);
+            Log.println(Log.INFO,"write to buffer", "finished writing to buffer");
+            out.flush();
+            Log.println(Log.INFO,"write to buffer", "message sent");
+        }
+        catch (IOException e)
+        {
+            Log.println(Log.INFO,"Writing to Stream","Failed to wright to stream");
+        }
+    }
     public void stopServer() {
         try {
             if (serverSocket != null && !serverSocket.isClosed()) {
