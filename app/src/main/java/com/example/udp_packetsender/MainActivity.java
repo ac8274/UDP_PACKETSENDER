@@ -30,7 +30,6 @@ public class MainActivity extends AppCompatActivity {
     public void sender(View view) {
         hotspot = new HotSpot("0.0.0.0",4454);
         hotspot.start();
-        //hotspot.stopServer();
     }
 
     @Override

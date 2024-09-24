@@ -2,14 +2,10 @@ package com.example.udp_packetsender;
 
 import android.util.Log;
 
-import java.io.BufferedReader;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
+
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -20,12 +16,13 @@ public class HotSpot extends Thread{
     private String HOTSPOT_IP; // Default IP for hotspot gateway
     private int PORT; // Port to listen on
     private static final String TAG = "ServerThread";
+    //private Context context;
 
-
-    public HotSpot(String ip,int port)
+    public HotSpot(String ip, int port)//, Context context
     {
         this.HOTSPOT_IP = ip;
         this.PORT = port;
+        //this.context = context;
     }
 
     @Override
@@ -83,13 +80,7 @@ public class HotSpot extends Thread{
             Log.println(Log.INFO,"SocketServer", "Received: " + receivedData);
             byte[] sendMessage = "hello my friend".getBytes(StandardCharsets.US_ASCII);
             writeToClient(outputStream , sendMessage);
-//            BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-//            String recived = in.readLine();
-//            Log.println(Log.INFO,"TCP" , "Recived message: " + recived);
-//            PrintWriter out = new PrintWriter(clientSocket.getOutputStream(),true);
-//            out.println("hello");
-//            in.close();
-//            out.close();
+
         } catch (IOException e) {
             Log.println(Log.INFO,"Reader","Reader failed to read from buffer");
             throw new RuntimeException(e);
@@ -100,9 +91,7 @@ public class HotSpot extends Thread{
     {
         try {
             out.write(message);
-            Log.println(Log.INFO,"write to buffer", "finished writing to buffer");
             out.flush();
-            Log.println(Log.INFO,"write to buffer", "message sent");
         }
         catch (IOException e)
         {
